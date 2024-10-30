@@ -23,20 +23,16 @@ func main() {
 		return
 	}
 
-	for _, b := range byteStream {
-		switch {
-		case service.IsAlphabetChar(b):
-			fmt.Printf("'%c' is an alphabet character\n", b)
-		case service.IsDigit(b):
-			fmt.Printf("'%c' is a digit\n", b)
-		case service.IsControlChar(b):
-			fmt.Printf("'%c' is a control character\n", b)
-		case service.IsWhitespace(b):
-			fmt.Printf("'%c' is a whitespace character\n", b)
-		case service.IsSpecialChar(b):
-			fmt.Printf("'%c' is a special character\n", b)
-		default:
-			fmt.Printf("'%c' is unclassified\n", b)
-		}
-	}
+	// Create an instance of CharCategoryCounter
+	counter := &service.CharCategoryCounter{}
+
+	// Parse the text to populate category counts
+	counter.ParseText(byteStream)
+
+	// Print the results
+	fmt.Printf("Alphabet characters: %d\n", counter.AlphabetCount)
+	fmt.Printf("Digits: %d\n", counter.DigitCount)
+	fmt.Printf("Whitespace characters: %d\n", counter.WhitespaceCount)
+	fmt.Printf("Control characters: %d\n", counter.ControlCount)
+	fmt.Printf("Special characters: %d\n", counter.SpecialCount)
 }
