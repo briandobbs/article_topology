@@ -1,2 +1,4 @@
 # article_topology
-A project for parsing articles into meaningful topological spaces
+A project for parsing articles into meaningful topological spaces. The goal is to parse each character in an article into each of the categories that it would fall into. These categories capture the structure of a body of text, or an article, such as if a character is a letter, digit, whitespace, special character, etc. It further captures which letter or number the character is. It will also categorize words, sentences, and paragraphs.
+
+This is a starting point, with a goal of being able to discover a structure that bodies of text can be mapped to, and using an algorithm crafted for this purpose, encode any body of text into this structure and decode it as well. My intuition is that there exists a structure and algorithms that allow one to do this in a way that the amount of memory needed to encode bodies of text of any size stays roughly the same. I'm hoping it has other properties as well, such as making the different parts of a body of text highly searchable and interactive.
