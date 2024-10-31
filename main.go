@@ -30,9 +30,9 @@ func main() {
 	counter.ParseText(byteStream)
 
 	// Print the results
-	fmt.Printf("Alphabet characters: %d\n", counter.AlphabetCount)
-	fmt.Printf("Digits: %d\n", counter.DigitCount)
-	fmt.Printf("Whitespace characters: %d\n", counter.WhitespaceCount)
-	fmt.Printf("Control characters: %d\n", counter.ControlCount)
-	fmt.Printf("Special characters: %d\n", counter.SpecialCount)
+	fmt.Printf("Alphabet: %v\n", counter.Alphabet)
+	fmt.Printf("Digits: %v\n", counter.Digit)
+	fmt.Printf("Whitespace: %v\n", counter.Whitespace)
+	fmt.Printf("Control: %v\n", counter.Control)
+	fmt.Printf("Special: %v\n", counter.Special)
 }
