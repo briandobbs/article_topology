@@ -2,44 +2,24 @@ package service
 
 import "unicode"
 
-// Define structs for each category with additional properties
-type AlphabetCategory struct {
-	Count    int
-	FirstPos int
-	LastPos  int
+type CharacterSet struct {
+	Character string
+	Size      int
+	FirstPos  int
+	LastPos   int
 }
 
-type DigitCategory struct {
-	Count    int
-	FirstPos int
-	LastPos  int
-}
-
-type WhitespaceCategory struct {
-	Count    int
-	FirstPos int
-	LastPos  int
-}
-
-type ControlCategory struct {
-	Count    int
-	FirstPos int
-	LastPos  int
-}
-
-type SpecialCategory struct {
-	Count    int
-	FirstPos int
-	LastPos  int
+type CharacterTypeSet struct {
+	CharacterType string
+	Size          int
+	FirstPos      int
+	LastPos       int
+	SubSets       []CharacterSet
 }
 
 // Main struct that holds each category struct
-type CharCategoryCounter struct {
-	Alphabet   AlphabetCategory
-	Digit      DigitCategory
-	Whitespace WhitespaceCategory
-	Control    ControlCategory
-	Special    SpecialCategory
+type TextBodyTopology struct {
+	CharacterTypeSets []CharacterTypeSet
 }
 
 // Function to check if a byte is an alphabet character (letter)
@@ -68,43 +48,82 @@ func IsSpecialChar(b byte) bool {
 }
 
 // Method to parse a text body and categorize each character, tracking first and last positions
-func (counter *CharCategoryCounter) ParseText(text []byte) {
+func (topology *TextBodyTopology) ParseText(text []byte) {
 	for i, b := range text {
+		var charTypeSet *CharacterTypeSet
+		character := string(b)
+
 		switch {
 		case IsAlphabetChar(b):
-			if counter.Alphabet.Count == 0 {
-				counter.Alphabet.FirstPos = i
-			}
-			counter.Alphabet.Count++
-			counter.Alphabet.LastPos = i
-
+			// Find or create the Alphabet CharacterTypeSet
+			charTypeSet = findOrCreateCharacterTypeSet(topology, "Alphabet")
 		case IsDigit(b):
-			if counter.Digit.Count == 0 {
-				counter.Digit.FirstPos = i
-			}
-			counter.Digit.Count++
-			counter.Digit.LastPos = i
-
+			// Find or create the Digit CharacterTypeSet
+			charTypeSet = findOrCreateCharacterTypeSet(topology, "Digit")
 		case IsWhitespace(b):
-			if counter.Whitespace.Count == 0 {
-				counter.Whitespace.FirstPos = i
-			}
-			counter.Whitespace.Count++
-			counter.Whitespace.LastPos = i
-
+			// Find or create the Whitespace CharacterTypeSet
+			charTypeSet = findOrCreateCharacterTypeSet(topology, "Whitespace")
 		case IsControlChar(b):
-			if counter.Control.Count == 0 {
-				counter.Control.FirstPos = i
-			}
-			counter.Control.Count++
-			counter.Control.LastPos = i
-
+			// Find or create the Control CharacterTypeSet
+			charTypeSet = findOrCreateCharacterTypeSet(topology, "Control")
 		case IsSpecialChar(b):
-			if counter.Special.Count == 0 {
-				counter.Special.FirstPos = i
+			// Find or create the Special CharacterTypeSet
+			charTypeSet = findOrCreateCharacterTypeSet(topology, "Special")
+		}
+
+		if charTypeSet != nil {
+			// Update overall CharacterTypeSet information
+			if charTypeSet.Size == 0 {
+				charTypeSet.FirstPos = i
 			}
-			counter.Special.Count++
-			counter.Special.LastPos = i
+			charTypeSet.Size++
+			charTypeSet.LastPos = i
+
+			// Update or create the CharacterSet for the specific character
+			updateOrCreateCharacterSet(charTypeSet, character, i)
 		}
 	}
+}
+
+// Helper function to find or create a CharacterTypeSet by type name
+func findOrCreateCharacterTypeSet(topology *TextBodyTopology, characterType string) *CharacterTypeSet {
+	for i := range topology.CharacterTypeSets {
+		if topology.CharacterTypeSets[i].CharacterType == characterType {
+			return &topology.CharacterTypeSets[i]
+		}
+	}
+
+	// If not found, create a new CharacterTypeSet
+	newTypeSet := CharacterTypeSet{
+		CharacterType: characterType,
+		FirstPos:      -1,
+		LastPos:       -1,
+		SubSets:       []CharacterSet{},
+	}
+	topology.CharacterTypeSets = append(topology.CharacterTypeSets, newTypeSet)
+	return &topology.CharacterTypeSets[len(topology.CharacterTypeSets)-1]
+}
+
+// Helper function to update or create a CharacterSet within a CharacterTypeSet
+func updateOrCreateCharacterSet(charTypeSet *CharacterTypeSet, character string, position int) {
+	for i := range charTypeSet.SubSets {
+		if charTypeSet.SubSets[i].Character == character {
+			// Update existing CharacterSet for this character
+			if charTypeSet.SubSets[i].Size == 0 {
+				charTypeSet.SubSets[i].FirstPos = position
+			}
+			charTypeSet.SubSets[i].Size++
+			charTypeSet.SubSets[i].LastPos = position
+			return
+		}
+	}
+
+	// If character not found in SubSets, create a new CharacterSet
+	newCharSet := CharacterSet{
+		Character: character,
+		Size:      1,
+		FirstPos:  position,
+		LastPos:   position,
+	}
+	charTypeSet.SubSets = append(charTypeSet.SubSets, newCharSet)
 }

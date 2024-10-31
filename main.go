@@ -23,16 +23,12 @@ func main() {
 		return
 	}
 
-	// Create an instance of CharCategoryCounter
-	counter := &service.CharCategoryCounter{}
+	// Create an instance of TextBodyTopology
+	counter := &service.TextBodyTopology{}
 
 	// Parse the text to populate category counts
 	counter.ParseText(byteStream)
 
 	// Print the results
-	fmt.Printf("Alphabet: %v\n", counter.Alphabet)
-	fmt.Printf("Digits: %v\n", counter.Digit)
-	fmt.Printf("Whitespace: %v\n", counter.Whitespace)
-	fmt.Printf("Control: %v\n", counter.Control)
-	fmt.Printf("Special: %v\n", counter.Special)
+	fmt.Printf("Results: %v", counter.CharacterTypeSets)
 }
